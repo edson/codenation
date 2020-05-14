@@ -9,7 +9,7 @@
 
 # ## _Setup_ geral
 
-# In[129]:
+# In[3]:
 
 
 from math import sqrt
@@ -29,7 +29,7 @@ from sklearn.feature_selection import RFE
 from loguru import logger
 
 
-# In[130]:
+# In[4]:
 
 
 # Algumas configurações para o matplotlib.
@@ -43,13 +43,13 @@ figsize(12, 8)
 sns.set()
 
 
-# In[131]:
+# In[5]:
 
 
 fifa = pd.read_csv("fifa.csv")
 
 
-# In[132]:
+# In[6]:
 
 
 columns_to_drop = ["Unnamed: 0", "ID", "Name", "Photo", "Nationality", "Flag",
@@ -70,38 +70,38 @@ except KeyError:
 
 # ## Inicia sua análise a partir daqui
 
-# In[133]:
+# In[7]:
 
 
 # Sua análise começa aqui.
 fifa.head()
 
 
-# In[134]:
+# In[8]:
 
 
 fifa.info()
 
 
-# In[135]:
+# In[9]:
 
 
 fifa.describe()
 
 
-# In[136]:
+# In[10]:
 
 
 fifa.isna().sum()
 
 
-# In[137]:
+# In[11]:
 
 
 fifa[fifa.isna().sum(axis=1) > 0].head(10)
 
 
-# In[138]:
+# In[12]:
 
 
 fifa = fifa.dropna()
@@ -111,7 +111,7 @@ fifa = fifa.dropna()
 # 
 # Qual fração da variância consegue ser explicada pelo primeiro componente principal de `fifa`? Responda como um único float (entre 0 e 1) arredondado para três casas decimais.
 
-# In[139]:
+# In[13]:
 
 
 pca = PCA().fit(fifa)
@@ -121,7 +121,7 @@ explained_var_ratio = pca.explained_variance_ratio_
 explained_var_ratio
 
 
-# In[140]:
+# In[14]:
 
 
 def q1():
@@ -130,13 +130,13 @@ def q1():
     return float(round(first_pca_explained_var_ratio, 3))
 
 
-# In[141]:
+# In[15]:
 
 
 q1()
 
 
-# In[142]:
+# In[16]:
 
 
 per_explained_var_ratio = np.round(explained_var_ratio * 100, decimals=1)
@@ -153,7 +153,7 @@ plt.show()
 # 
 # Quantos componentes principais precisamos para explicar 95% da variância total? Responda como un único escalar inteiro.
 
-# In[143]:
+# In[17]:
 
 
 cumulative_var_ratio = np.cumsum(explained_var_ratio)
@@ -165,7 +165,7 @@ plt.ylabel('cumulative explained variance')
 plt.show()
 
 
-# In[144]:
+# In[18]:
 
 
 def q2():
@@ -173,7 +173,7 @@ def q2():
     return int(component_number)
 
 
-# In[145]:
+# In[19]:
 
 
 q2()
@@ -183,7 +183,7 @@ q2()
 # 
 # Qual são as coordenadas (primeiro e segundo componentes principais) do ponto `x` abaixo? O vetor abaixo já está centralizado. Cuidado para __não__ centralizar o vetor novamente (por exemplo, invocando `PCA.transform()` nele). Responda como uma tupla de float arredondados para três casas decimais.
 
-# In[146]:
+# In[20]:
 
 
 x = [0.87747123,  -1.24990363,  -1.3191255, -36.7341814,
@@ -199,13 +199,13 @@ x = [0.87747123,  -1.24990363,  -1.3191255, -36.7341814,
 ]
 
 
-# In[147]:
+# In[21]:
 
 
 pca.components_
 
 
-# In[148]:
+# In[22]:
 
 
 x_pca = np.dot(pca.components_[0:2], x)
@@ -213,7 +213,7 @@ x_pca = np.dot(pca.components_[0:2], x)
 x_pca
 
 
-# In[149]:
+# In[23]:
 
 
 def q3():
@@ -221,7 +221,7 @@ def q3():
     return (round(x_pca[0], 3), round(x_pca[1], 3))
 
 
-# In[150]:
+# In[24]:
 
 
 q3()
@@ -237,7 +237,7 @@ q3()
 # 
 # 
 
-# In[151]:
+# In[27]:
 
 
 y = fifa['Overall']
@@ -246,11 +246,12 @@ fifa_without_overall = fifa.drop(['Overall'], axis=1)
 model = LinearRegression()
 
 #Initializing RFE model
-rfe = RFE(model, 5)             
+rfe = RFE(model, n_features_to_select=5)             
 #Transforming data using RFE
 X_rfe = rfe.fit_transform(fifa_without_overall,y)  
-#Fitting the data to model
-model_fitted = model.fit(X_rfe,y)          
+
+print(X_rfe)
+
 selected_features_rfe = fifa_without_overall.columns[rfe.support_]
 print(selected_features_rfe)
 
@@ -269,12 +270,12 @@ def q4():
 q4()
 
 
-# Not related to the question. Example of number of features where the accuracy is the highest.
+# Example of number of features where the accuracy is the highest.
 
 # In[154]:
 
 
-#Verificação de correlação. 
+#Correlation check
 plt.figure(figsize=(16,12))
 fifa_corr = fifa.corr()
 sns.heatmap(fifa_corr, cmap=plt.cm.Reds)
